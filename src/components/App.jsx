@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import { getAllPitures } from './api/api';
-import { ImageGallry } from './ImageGallery/ImageGallery';
+import { ImageGallary } from './ImageGallery/ImageGallery';
+import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
+import { Button } from './Button/Button';
+
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 
 class App extends Component {
   state = {
@@ -9,10 +14,10 @@ class App extends Component {
     searchText: '',
   };
 
-  createSearchRequire = bola => {
-    console.log(bola.inputValue);
+  createSearchRequire = searchTextInput => {
+    console.log(searchTextInput.inputValue);
 
-    this.setState({ searchText: bola.inputValue });
+    this.setState({ searchText: searchTextInput.inputValue });
     console.log(this.state);
   };
 
@@ -23,6 +28,10 @@ class App extends Component {
         this.setState({ pictures: data.hits });
         console.log(this.state);
       }
+      new SimpleLightbox('.gallery a', {
+        captionsData: 'alt',
+        captionDelay: 250,
+      });
     });
   }
 
@@ -31,16 +40,10 @@ class App extends Component {
     return (
       <>
         <Searchbar createSearchRequire={this.createSearchRequire} />
-        <ImageGallry>
-          {pictures &&
-            pictures.map(({ id, webformatURL }) => {
-              return (
-                <li key={id}>
-                  <img src={webformatURL} alt="" />
-                </li>
-              );
-            })}
-        </ImageGallry>
+        <ImageGallary>
+          <ImageGalleryItem pictures={pictures} />
+        </ImageGallary>
+        {pictures && <Button />}
       </>
     );
   }
