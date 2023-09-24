@@ -1,9 +1,15 @@
-import React from 'react';
+import React, { Component } from 'react';
+import { Btn } from './Button.styled';
+export class Button extends Component {
+  state = {
+    page: 1,
+  };
 
-export const Button = () => {
-  return (
-    <button type="submit" className="button">
-      <span className="button-label">Load more</span>
-    </button>
-  );
-};
+  render() {
+    return (
+      <Btn onClick={this.props.createLoadMore} type="button">
+        <span className="button-label">Load more</span>
+      </Btn>
+    );
+  }
+}

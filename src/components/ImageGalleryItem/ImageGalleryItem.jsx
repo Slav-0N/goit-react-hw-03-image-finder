@@ -1,16 +1,25 @@
 import React from 'react';
-import { Img } from './ImageGalleryItem.styled';
+import { Li } from './ImageGalleryItem.styled';
 
-export const ImageGalleryItem = ({ pictures }) => {
-  // console.log(pictures.length);
+export const ImageGalleryItem = ({
+  pictures,
+  toggleModal,
+  onClickModalPictureAddress,
+}) => {
   if (pictures) {
     return (
       pictures.length &&
-      pictures.map(({ id, webformatURL }) => {
+      pictures.map(({ id, webformatURL, largeImageURL }) => {
         return (
-          <a key={id} href={webformatURL}>
-            <Img src={webformatURL} alt="" />
-          </a>
+          <Li key={id}>
+            <img
+              src={webformatURL}
+              alt=""
+              onClick={e => {
+                toggleModal(largeImageURL, e);
+              }}
+            />
+          </Li>
         );
       })
     );

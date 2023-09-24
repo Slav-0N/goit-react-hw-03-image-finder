@@ -1,9 +1,5 @@
-import { Div } from './ImageGallery.styled';
+import { Ul } from './ImageGallery.styled';
 
 export const ImageGallary = ({ children }) => {
-  return (
-    <Div>
-      <div className="gallery">{children}</div>
-    </Div>
-  );
+  return <Ul>{children}</Ul>;
 };
