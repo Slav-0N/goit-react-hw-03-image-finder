@@ -16,21 +16,18 @@ class Searchbar extends Component {
     event.preventDefault();
 
     this.props.createSearchRequire(this.state);
-    this.setState({
-      inputValue: '',
-    });
+    // this.setState({
+    //   inputValue: '',
+    // });
   };
 
   render() {
     return (
-      <Header className="searchbar">
-        <form className="form" onSubmit={this.handleSubmit}>
-          <button type="submit" className="button">
-            <span className="button-label"></span>
-          </button>
+      <Header>
+        <form onSubmit={this.handleSubmit}>
+          <button type="submit" className="button" />
 
           <input
-            className="input"
             type="text"
             autoComplete="off"
             autoFocus

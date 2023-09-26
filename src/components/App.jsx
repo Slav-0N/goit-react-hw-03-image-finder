@@ -2,113 +2,87 @@ import React, { Component } from 'react';
 import Searchbar from './Searchbar/Searchbar';
 import { getAllPitures } from './api/api';
 import { ImageGallary } from './ImageGallery/ImageGallery';
-import { ImageGalleryItem } from './ImageGalleryItem/ImageGalleryItem';
 import { Button } from './Button/Button';
 import { Section } from './App.styled';
 import Modal from './Modal/Modal';
 import { Spinner } from './Loader/Loader';
-// import { Vortex } from 'react-loader-spinner';
 
 class App extends Component {
   state = {
-    pictures: null,
+    pictures: [],
     searchText: '',
     page: 1,
-    loadMore: null,
-    showModal: false,
-    modalPicture: '',
+    modalPicture: null,
     isLoading: false,
+    totalImages: 0,
   };
 
   componentDidUpdate(_, prevState) {
-    if (this.state.page > 1) {
-      if (this.state.page !== prevState.page) {
-        this.setState({
-          isLoading: true,
+    const { page, searchText } = this.state;
+
+    if (prevState.page !== page || prevState.searchText !== searchText) {
+      this.setState({
+        isLoading: true,
+      });
+
+      getAllPitures(searchText, page)
+        .then(data => {
+          if (!data.hits.length) {
+            alert('no pictures');
+            return;
+          }
+
+          this.setState(prevState => ({
+            pictures: [...prevState.pictures, ...data.hits],
+            totalImages: data.totalHits,
+          }));
+        })
+        .catch(error => {
+          console.log(error.message);
+        })
+        .finally(() => {
+          this.setState({ isLoading: false });
         });
-      }
-      const { searchText, page } = this.state;
-      getAllPitures(searchText, page).then(data => {
-        console.log(searchText, page);
-        console.log(data);
-
-        if (prevState.page !== this.state.page) {
-          console.log(prevState.pictures, data.hits);
-          const newArr = [...prevState.pictures, ...data.hits];
-
-          this.setState({
-            pictures: newArr,
-            isLoading: false,
-          });
-        }
-      });
-    } else {
-      // if (prevState.pictures === ) {
-      //   this.setState({
-      //     isLoading: true,
-      //   });
-      // }
-
-      // console.log(this.state.pictures);
-      // console.log(prevState.pictures);
-      // console.log(this.state.page);
-      getAllPitures(this.state.searchText, this.state.page).then(data => {
-        if (prevState.searchText !== this.state.searchText) {
-          this.setState({
-            pictures: data.hits,
-            isLoading: false,
-          });
-        }
-      });
-
-      console.log(this.state.page);
     }
   }
 
-  toggleModal = (img, e) => {
-    // e.preventDefault();
-    this.setState(state => ({
-      showModal: !state.showModal,
+  toggleModal = (img = null) => {
+    this.setState({
       modalPicture: img,
-    }));
-    console.log(e);
-    console.log(img);
+    });
   };
 
   createSearchRequire = searchTextInput => {
     this.setState({
       searchText: searchTextInput.inputValue,
-      loadMore: searchTextInput.inputValue,
+      page: 1,
+      pictures: [],
+      totalImages: 0,
     });
   };
 
   createLoadMore = () => {
-    const plusPage = this.state.page + 1;
-
-    this.setState({
-      page: plusPage,
-    });
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
   };
 
   render() {
-    const { pictures, showModal, modalPicture, isLoading } = this.state;
+    const { pictures, modalPicture, isLoading, totalImages } = this.state;
     return (
       <Section>
-        {showModal && (
+        {modalPicture && (
           <Modal imgAddr={modalPicture} onClose={this.toggleModal} />
         )}
         <Searchbar createSearchRequire={this.createSearchRequire} />
-        {isLoading ? <p>Loading .......</p> : ''}
-        <ImageGallary>
-          {/* {isLoading ? <p>Loading .......</p> : ''} */}
 
-          <ImageGalleryItem
-            pictures={pictures}
-            toggleModal={this.toggleModal}
-          />
-        </ImageGallary>
+        {pictures.length > 0 && (
+          <ImageGallary pictures={pictures} toggleModal={this.toggleModal} />
+        )}
         {isLoading ? <Spinner /> : ''}
-        {pictures && <Button createLoadMore={this.createLoadMore} />}
+        {pictures.length !== totalImages && !isLoading && (
+          <Button createLoadMore={this.createLoadMore} />
+        )}
       </Section>
     );
   }

@@ -15,7 +15,6 @@ export default class Modal extends Component {
     }
   };
   handleBackdropClick = e => {
-    console.log('Кликнул на бекдроп');
     if (e.target === e.currentTarget) {
       this.props.onClose();
     }
